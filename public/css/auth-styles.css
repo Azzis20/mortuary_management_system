@@ -1,0 +1,209 @@
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #000;
+    --secondary: #666;
+    --border: #e0e0e0;
+    --bg: #fff;
+    --bg-light: #fafafa;
+    --error: #dc2626;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        sans-serif;
+    line-height: 1.6;
+    color: var(--primary);
+    background: var(--bg-light);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+/* Container */
+.container {
+    background: var(--bg);
+    padding: 3rem;
+    max-width: 450px;
+    width: 100%;
+    border: 1px solid var(--border);
+}
+
+/* Back Link */
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--secondary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+    transition: color 0.3s;
+}
+
+.back-link:hover {
+    color: var(--primary);
+}
+
+.back-link::before {
+    content: "←";
+    font-size: 1.2rem;
+}
+
+/* Heading */
+h1 {
+    font-size: 1.8rem;
+    font-weight: 400;
+    margin-bottom: 2rem;
+    letter-spacing: -0.5px;
+}
+
+/* Alert */
+.alert {
+    padding: 1rem;
+    margin-bottom: 2rem;
+    border: 1px solid var(--border);
+    background: var(--bg-light);
+}
+
+.alert-error {
+    border-color: var(--error);
+    background: #fef2f2;
+    color: var(--error);
+}
+
+.alert strong {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.alert ul {
+    margin-left: 1.2rem;
+    font-size: 0.9rem;
+}
+
+.alert li {
+    margin-bottom: 0.3rem;
+}
+
+/* Form */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: var(--primary);
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 0.9rem;
+    border: 1px solid var(--border);
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: border-color 0.3s;
+    background: var(--bg);
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+input::placeholder {
+    color: #999;
+}
+
+.error-message {
+    color: var(--error);
+    font-size: 0.85rem;
+    margin-top: 0.4rem;
+}
+
+/* Button */
+.btn {
+    width: 100%;
+    padding: 1rem;
+    border: none;
+    font-size: 0.95rem;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: inherit;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    opacity: 0.85;
+}
+
+/* Text Center */
+.text-center {
+    text-align: center;
+}
+
+.mt-20 {
+    margin-top: 2rem;
+}
+
+.text-center p {
+    font-size: 0.9rem;
+    color: var(--secondary);
+}
+
+.text-center a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 400;
+    border-bottom: 1px solid var(--primary);
+    transition: opacity 0.3s;
+}
+
+.text-center a:hover {
+    opacity: 0.7;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    body {
+        padding: 1rem;
+    }
+
+    .container {
+        padding: 2rem 1.5rem;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 1.5rem 1rem;
+    }
+
+    h1 {
+        font-size: 1.4rem;
+    }
+}

@@ -1,0 +1,193 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Carbon\Carbon;
+
+class Viewing extends Model
+{
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'book_service_id',
+        'viewing_date',
+        'start_time',
+        'end_time',
+        'location',
+        'address',
+        'viewing_type',
+        'open_casket',
+        'special_requests',
+        'expected_attendees',
+        'actual_attendees',
+        'status',
+        'notes',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'viewing_date' => 'date',
+        'start_time' => 'datetime:H:i',
+        'end_time' => 'datetime:H:i',
+        'open_casket' => 'boolean',
+        'expected_attendees' => 'integer',
+        'actual_attendees' => 'integer',
+    ];
+
+    /**
+     * Get the booking (BookService) that this viewing belongs to.
+     */
+    public function bookService(): BelongsTo
+    {
+        return $this->belongsTo(BookService::class);
+    }
+
+    /**
+     * Get the deceased person through the booking.
+     */
+    public function deceased()
+    {
+        return $this->hasOneThrough(
+            Deceased::class,
+            BookService::class,
+            'id', // Foreign key on BookService table
+            'id', // Foreign key on Deceased table
+            'book_service_id', // Local key on Viewing table
+            'deceased_id' // Local key on BookService table
+        );
+    }
+
+    /**
+     * Get the client through the booking.
+     */
+    public function client()
+    {
+        return $this->hasOneThrough(
+            User::class,
+            BookService::class,
+            'id',
+            'id',
+            'book_service_id',
+            'client_id'
+        );
+    }
+
+    /**
+     * Scope: Get upcoming viewings
+     */
+    public function scopeUpcoming($query)
+    {
+        return $query->where('viewing_date', '>=', Carbon::today())
+                     ->where('status', '!=', 'Completed')
+                     ->where('status', '!=', 'Cancelled')
+                     ->orderBy('viewing_date', 'asc')
+                     ->orderBy('start_time', 'asc');
+    }
+
+    /**
+     * Scope: Get today's viewings
+     */
+    public function scopeToday($query)
+    {
+        return $query->whereDate('viewing_date', Carbon::today())
+                     ->orderBy('start_time', 'asc');
+    }
+
+    /**
+     * Scope: Get past viewings
+     */
+    public function scopePast($query)
+    {
+        return $query->where('viewing_date', '<', Carbon::today())
+                     ->orderBy('viewing_date', 'desc');
+    }
+
+    /**
+     * Check if viewing is happening today
+     */
+    public function isToday(): bool
+    {
+        return $this->viewing_date->isToday();
+    }
+
+    /**
+     * Check if viewing is upcoming
+     */
+    public function isUpcoming(): bool
+    {
+        return $this->viewing_date->isFuture();
+    }
+
+    /**
+     * Check if viewing is in progress
+     */
+    public function isInProgress(): bool
+    {
+        if (!$this->isToday()) {
+            return false;
+        }
+
+        $now = Carbon::now();
+        $start = Carbon::parse($this->start_time);
+        $end = Carbon::parse($this->end_time);
+
+        return $now->between($start, $end);
+    }
+
+    /**
+     * Get formatted viewing time range
+     */
+    public function getTimeRangeAttribute(): string
+    {
+        return Carbon::parse($this->start_time)->format('g:i A') . ' - ' . 
+               Carbon::parse($this->end_time)->format('g:i A');
+    }
+
+    /**
+     * Get viewing duration in hours
+     */
+    public function getDurationAttribute(): float
+    {
+        $start = Carbon::parse($this->start_time);
+        $end = Carbon::parse($this->end_time);
+        
+        return $start->diffInHours($end, true);
+    }
+
+    /**
+     * Get full viewing datetime for start
+     */
+    public function getStartDateTimeAttribute(): Carbon
+    {
+        return Carbon::parse($this->viewing_date->format('Y-m-d') . ' ' . $this->start_time);
+    }
+
+    /**
+     * Get full viewing datetime for end
+     */
+    public function getEndDateTimeAttribute(): Carbon
+    {
+        return Carbon::parse($this->viewing_date->format('Y-m-d') . ' ' . $this->end_time);
+    }
+
+    /**
+     * Get attendance rate (if actual attendees is set)
+     */
+    public function getAttendanceRateAttribute(): ?float
+    {
+        if (!$this->expected_attendees || !$this->actual_attendees) {
+            return null;
+        }
+
+        return round(($this->actual_attendees / $this->expected_attendees) * 100, 1);
+    }
+}

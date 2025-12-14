@@ -1,0 +1,250 @@
+erDiagram
+    CLIENT ||--o{ DECEASED : registers
+    CLIENT ||--o{ BOOKING : creates
+    CLIENT ||--o{ PAYMENT : makes
+    
+    DECEASED ||--o{ NEXT_OF_KIN : has
+    DECEASED ||--o{ DECEASED_DOCUMENT : has
+    DECEASED ||--|| BOOKING : "associated with"
+    
+    BOOKING ||--|| SERVICE_PACKAGE : selects
+    BOOKING ||--|| RETRIEVAL_SCHEDULE : has
+    BOOKING ||--|| VIEWING_SCHEDULE : has
+    BOOKING ||--|| STATUS_TRACKER : has
+    BOOKING ||--o{ BOOKING_INVENTORY : uses
+    BOOKING ||--o{ STAFF_ASSIGNMENT : requires
+    BOOKING ||--o| PAYMENT : generates
+    
+    SERVICE_PACKAGE ||--o{ PACKAGE_INCLUSION : contains
+    
+    STAFF ||--o{ STAFF_ASSIGNMENT : "assigned to"
+    
+    INVENTORY ||--o{ BOOKING_INVENTORY : "used in"
+    INVENTORY ||--o{ INVENTORY_TRANSACTION : tracks
+    
+    ADMIN ||--o{ BOOKING : manages
+    ADMIN ||--o{ SYSTEM_LOG : creates
+    
+    CLIENT {
+        int client_id PK
+        string first_name
+        string last_name
+        string email
+        string phone
+        string address
+        string password_hash
+        datetime created_at
+        datetime updated_at
+        boolean is_active
+    }
+    
+    DECEASED {
+        int deceased_id PK
+        int client_id FK
+        string first_name
+        string last_name
+        date date_of_birth
+        date date_of_death
+        string place_of_death
+        text cause_of_death
+        string gender
+        text remarks
+        datetime created_at
+        datetime updated_at
+    }
+    
+    NEXT_OF_KIN {
+        int next_of_kin_id PK
+        int deceased_id FK
+        string first_name
+        string last_name
+        string relationship
+        string phone
+        string email
+        string address
+        boolean is_primary
+    }
+    
+    DECEASED_DOCUMENT {
+        int document_id PK
+        int deceased_id FK
+        string document_type
+        string file_name
+        string file_path
+        string file_type
+        datetime uploaded_at
+    }
+    
+    SERVICE_PACKAGE {
+        int package_id PK
+        string package_name
+        string package_type
+        decimal price
+        text description
+        boolean is_active
+        string image_path
+        datetime created_at
+        datetime updated_at
+    }
+    
+    PACKAGE_INCLUSION {
+        int inclusion_id PK
+        int package_id FK
+        string service_name
+        text description
+        int display_order
+    }
+    
+    BOOKING {
+        int booking_id PK
+        int client_id FK
+        int deceased_id FK
+        int package_id FK
+        string booking_number
+        decimal total_amount
+        string status
+        text admin_notes
+        datetime booking_date
+        datetime created_at
+        datetime updated_at
+    }
+    
+    RETRIEVAL_SCHEDULE {
+        int retrieval_id PK
+        int booking_id FK
+        string location
+        string address
+        text location_details
+        date scheduled_date
+        time scheduled_time
+        string status
+        datetime actual_retrieval_time
+        text notes
+    }
+    
+    VIEWING_SCHEDULE {
+        int viewing_id PK
+        int booking_id FK
+        string chapel_room
+        date scheduled_date
+        time start_time
+        time end_time
+        int duration_hours
+        string status
+        text notes
+    }
+    
+    STATUS_TRACKER {
+        int status_id PK
+        int booking_id FK
+        string current_stage
+        datetime booking_pending_at
+        datetime approved_at
+        datetime dispatch_at
+        datetime in_care_at
+        datetime preparation_at
+        datetime viewing_service_at
+        datetime completed_at
+        text stage_notes
+        datetime updated_at
+    }
+    
+    STAFF {
+        int staff_id PK
+        string first_name
+        string last_name
+        string role
+        string email
+        string phone
+        string password_hash
+        boolean is_available
+        boolean is_active
+        datetime created_at
+        datetime updated_at
+    }
+    
+    STAFF_ASSIGNMENT {
+        int assignment_id PK
+        int booking_id FK
+        int staff_id FK
+        string task_type
+        string status
+        datetime assigned_at
+        datetime completed_at
+        text notes
+    }
+    
+    PAYMENT {
+        int payment_id PK
+        int booking_id FK
+        int client_id FK
+        decimal amount
+        string payment_method
+        string payment_status
+        datetime payment_date
+        string receipt_number
+        int processed_by_admin FK
+        text notes
+        datetime created_at
+    }
+    
+    INVENTORY {
+        int inventory_id PK
+        string item_name
+        string category
+        int quantity_in_stock
+        int minimum_threshold
+        decimal unit_price
+        string supplier_name
+        string supplier_contact
+        datetime created_at
+        datetime updated_at
+    }
+    
+    BOOKING_INVENTORY {
+        int booking_inventory_id PK
+        int booking_id FK
+        int inventory_id FK
+        int quantity_used
+        decimal unit_price_at_time
+        decimal subtotal
+        datetime used_at
+    }
+    
+    INVENTORY_TRANSACTION {
+        int transaction_id PK
+        int inventory_id FK
+        string transaction_type
+        int quantity
+        decimal unit_price
+        string reference_number
+        text notes
+        datetime transaction_date
+        int created_by_admin FK
+    }
+    
+    ADMIN {
+        int admin_id PK
+        string username
+        string first_name
+        string last_name
+        string email
+        string phone
+        string password_hash
+        string role
+        text permissions
+        boolean is_active
+        datetime created_at
+        datetime updated_at
+    }
+    
+    SYSTEM_LOG {
+        int log_id PK
+        int admin_id FK
+        string action_type
+        string entity_type
+        int entity_id
+        text description
+        string ip_address
+        datetime created_at
+    }
