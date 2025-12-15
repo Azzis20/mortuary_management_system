@@ -21,8 +21,8 @@ COPY . /var/www/html/
 
 
 #Create uploads folder and set permissions
-RUN mkdir -p /var/www/html/public/storage/uploads/documents \ 
-    && mkdir -p /var/www/html/public/storage/uploads/pictures \ 
+RUN mkdir -p /var/www/html/public/storage/documents \ 
+    && mkdir -p /var/www/html/public/storage/profiles \ 
     && chown -R www-data:www-data /var/www/html/public/uploads \
     && chmod -R 777 /var/www/html/public/storage
 
