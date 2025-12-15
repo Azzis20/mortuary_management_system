@@ -2,10 +2,21 @@
 FROM php:8.2-apache
 
 # Install required Php extensions for Laravel + GD dependencies
-RUN apt-get update && apt-get install install -y \ 
-    git unzip libpq-dev libzip-dev zip \ 
-    libpng-dev libjpeg-dev libfreetype6-dev \
-    && docker-php-ext-configure gd --with-jpeg --with-freestype \
+# RUN apt-get update && apt-get install install -y \ 
+#     git unzip libpq-dev libzip-dev zip \ 
+#     libpng-dev libjpeg-dev libfreetype6-dev \
+#     && docker-php-ext-configure gd --with-jpeg --with-freestype \
+#     && docker-php-ext-install pdo pdo_mysql zip
+RUN apt-get update && apt-get install -y \
+    git \
+    unzip \
+    libpq-dev \
+    libzip-dev \
+    zip \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    && docker-php-ext-configure gd --with-jpeg --with-freetype \
     && docker-php-ext-install pdo pdo_mysql zip
 
 
