@@ -66,3 +66,12 @@ EXPOSE 10000
 
 # Start Apache
 CMD ["apache2-foreground"]
+
+# Install Laravel dependencies
+RUN composer install --no-dev --optimize-autoloader --no-scripts
+
+# Generate optimized autoload files
+RUN composer dump-autoload --optimize
+
+# Clear and cache Laravel config (do this at runtime, not build)
+# RUN php artisan config:cache
