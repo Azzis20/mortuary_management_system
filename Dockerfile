@@ -30,8 +30,17 @@ COPY . /var/www/html/
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer 
 
-# Install Laravel dependencies
-RUN composer install --no-dev --optimize-autoloader
+# Copy .env.example to .env for build process (will be overridden by Render env vars at runtime)
+RUN cp .env.example .env || true
+
+# Set a temporary APP_KEY just for the build process
+RUN sed -i 's/APP_KEY=$/APP_KEY=base64:temporary_build_key_12345678901234567890123456789012/' .env
+
+# Install Laravel dependencies with --no-scripts to avoid env issues
+RUN composer install --no-dev --optimize-autoloader --no-scripts
+
+# Now run the post-install scripts
+RUN composer run-script post-autoload-dump
 
 # Install Node + npm
 RUN apt-get update && apt-get install -y nodejs npm
