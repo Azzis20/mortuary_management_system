@@ -19,8 +19,8 @@
         <!-- Sidebar Navigation -->
         <aside class="sidebar">
             <div class="logo">
-                <h2>Mortuary</h2>
-                <p>Management System</p>
+                <h2>Peaceful Rest</h2>
+                <p>Mortuary Management System</p>
             </div>
             
 
