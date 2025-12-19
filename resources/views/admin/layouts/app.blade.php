@@ -99,9 +99,7 @@
     <a href="{{ route('admin.viewing.index') }}" class="nav-item sub-item {{ request()->routeIs('admin.viewing.index*') ? 'active' : '' }}">
         <span>Viewing Schedule</span> 
     </a>
-    <a href="{{ route('admin.embalming.index') }}" class="nav-item sub-item {{ request()->routeIs('admin.embalming.index*') ? 'active' : '' }}">
-        <span>Embalming Schedule</span> 
-    </a>
+
 </div>
     
     <a href="{{ route('admin.inventory') }}" class="nav-item {{ request()->routeIs('admin.inventory*') ? 'active' : '' }}">
