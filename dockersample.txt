@@ -14,14 +14,8 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-configure gd --with-jpeg --with-freetype \
     && docker-php-ext-install pdo pdo_mysql zip gd
 
-# Fix MPM conflict - disable all MPMs except mpm_prefork (default for php:apache)
-RUN a2dismod mpm_event mpm_worker || true
-
 # Enable Apache mod_rewrite (needed for Laravel routes)
 RUN a2enmod rewrite
-
-# Configure Apache to allow .htaccess overrides
-RUN sed -i '/<Directory \/var\/www\/>/,/<\/Directory>/ s/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
 
 # SET Apache DocumentRoot to /var/www/html/public
 RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf \
@@ -72,3 +66,12 @@ EXPOSE 10000
 
 # Start Apache
 CMD ["apache2-foreground"]
+
+# Install Laravel dependencies
+RUN composer install --no-dev --optimize-autoloader --no-scripts
+
+# Generate optimized autoload files
+RUN composer dump-autoload --optimize
+
+# Clear and cache Laravel config (do this at runtime, not build)
+# RUN php artisan config:cache
