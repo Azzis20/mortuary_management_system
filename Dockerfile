@@ -36,6 +36,10 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 # Install Laravel dependencies
 RUN composer install --no-dev --optimize-autoloader
 
+# Generate APP_KEY if not set (for first deployment)
+# Note: This will be overridden by environment variable if you set one
+RUN php artisan key:generate --force || true
+
 # Create storage directories and set permissions
 RUN mkdir -p /var/www/html/storage/app/public/documents \
     && mkdir -p /var/www/html/storage/app/public/profiles \
@@ -58,11 +62,22 @@ RUN apt-get update && apt-get install -y nodejs npm
 # Build frontend assets
 RUN npm install && npm run build
 
+# Verify build output exists
+RUN ls -la /var/www/html/public/build || ls -la /var/www/html/public/css || echo "Warning: Build output not found"
+
+# Clear Laravel caches
+RUN php artisan config:clear || true \
+    && php artisan cache:clear || true \
+    && php artisan view:clear || true \
+    && php artisan route:clear || true
+
 # Final permission fixes for Laravel
 RUN chown -R www-data:www-data /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/bootstrap/cache \
     && chown -R www-data:www-data /var/www/html/public \
-    && chmod -R 775 /var/www/html/public
+    && chmod -R 775 /var/www/html/public \
+    && (chown -R www-data:www-data /var/www/html/public/build 2>/dev/null || true) \
+    && (chmod -R 755 /var/www/html/public/build 2>/dev/null || true)
 
 # Expose Render's required port
 EXPOSE 10000
